@@ -1,0 +1,76 @@
+# @var docker_compose_actions:description: >
+# List of actions the role does, accepts one or more actions.
+# Use comma without spaces as a delimiter for multiple actions.
+# @var docker_compose_actions:required: `true`
+# @var docker_compose_actions:type: String
+# @var docker_compose_actions:example: >
+#   docker_compose_actions: install
+#   docker_compose_actions: install,upload_config
+# @end
+
+# @var docker_compose_docker_repo:description: Base URL of the Docker apt repository
+# @var docker_compose_docker_repo:type: String
+# @end
+docker_compose_docker_repo: https://download.docker.com/linux/ubuntu
+
+# @var docker_compose_docker_version:description: docker-ce and docker-ce-cli package version for installation
+# @var docker_compose_docker_version:required: `true`, only in case `docker_compose_actions: install`
+# @var docker_compose_docker_version:type: String
+# @end
+docker_compose_docker_version: 5:28.2.2-1~ubuntu.24.04~noble
+
+# @var docker_compose_containerd_version:description: containerd.io package version for installation
+# @var docker_compose_containerd_version:required: `true`, only in case `docker_compose_actions: install`
+# @var docker_compose_containerd_version:type: String
+# @end
+docker_compose_containerd_version: 1.7.27-1
+
+# @var docker_compose_buildx_version:description: docker-buildx-plugin package version for installation
+# @var docker_compose_buildx_version:required: `true`, only in case `docker_compose_actions: install`
+# @var docker_compose_buildx_version:type: String
+# @end
+docker_compose_buildx_version: 0.24.0-1~ubuntu.24.04~noble
+
+# @var docker_compose_version:description: docker-compose-plugin package version for installation
+# @var docker_compose_version:required: `true`, only in case `docker_compose_actions: install`
+# @var docker_compose_version:type: String
+# @end
+docker_compose_version: 2.36.2-1~ubuntu.24.04~noble
+
+# @var docker_compose_dest_dir:description: Directory where docker-compose.yml will be uploaded
+# @var docker_compose_dest_dir:required: `true`, only in case `docker_compose_actions: upload_config`
+# @var docker_compose_dest_dir:type: String
+# @end
+docker_compose_dest_dir: /opt/docker_compose
+
+# @var docker_compose_file_owner:description: Owner of the uploaded docker-compose.yml file
+# @var docker_compose_file_owner:type: String
+# @end
+docker_compose_file_owner: root
+
+# @var docker_compose_file_group:description: Group of the uploaded docker-compose.yml file
+# @var docker_compose_file_group:type: String
+# @end
+docker_compose_file_group: root
+
+# @var docker_compose_state_action:description: Controls state of Docker Compose services
+# @var docker_compose_state_action:required: `true`, only in case `docker_compose_actions: state_control`
+# @var docker_compose_state_action:type: String
+# @var docker_compose_state_action:example: >
+#   docker_compose_state_action: present
+#   docker_compose_state_action: stopped
+#   docker_compose_state_action: absent
+#   docker_compose_state_action: restarted
+# @end
+
+# @var docker_compose_config:description: Content of the docker-compose.yml file to upload
+# @var docker_compose_config:required: `true`, only in case `docker_compose_actions: upload_config`
+# @var docker_compose_config:type: String
+# @var docker_compose_config:example: >
+#   docker_compose_config:
+#     services:
+#       app:
+#         image: myapp:latest
+#         ports:
+#           - "8080:8080"
+# @end

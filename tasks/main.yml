@@ -1,0 +1,18 @@
+---
+- name: Create docker_compose_action_list
+  ansible.builtin.set_fact:
+    docker_compose_action_list: "{{ docker_compose_actions.split(',') }}"
+
+- name: Validate docker_compose_action_list
+  ansible.builtin.assert:
+    that:
+      - docker_compose_actions is defined
+      - docker_compose_action_list | length > 0
+      - docker_compose_action_list | difference(docker_compose_supported_actions) | length == 0
+
+- name: Run Docker Compose tasks
+  ansible.builtin.include_tasks: "{{ docker_compose_action }}.yml"
+  loop: "{{ docker_compose_action_list }}"
+  loop_control:
+    loop_var: docker_compose_action
+    label: "{{ docker_compose_action }}"

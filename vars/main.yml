@@ -1,0 +1,9 @@
+docker_compose_supported_actions:
+  - install
+  - upload_config
+  - state_control
+docker_compose_supported_states:
+  - present
+  - stopped
+  - absent
+  - restarted

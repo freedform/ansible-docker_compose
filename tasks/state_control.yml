@@ -1,0 +1,11 @@
+---
+- name: Validate variables for state_control.yml task
+  ansible.builtin.assert:
+    that:
+      - docker_compose_state_action in docker_compose_supported_states
+      - docker_compose_dest_dir is defined
+
+- name: Control docker compose services
+  community.docker.docker_compose_v2:
+    project_src: "{{ docker_compose_dest_dir }}"
+    state: "{{ docker_compose_state_action }}"

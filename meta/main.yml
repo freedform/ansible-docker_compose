@@ -1,0 +1,7 @@
+galaxy_info:
+  author: freedform
+  description: Automates installation, configuration, and state management of Docker Compose services
+  min_ansible_version: "2.20"
+  license: MIT
+
+dependencies: []
