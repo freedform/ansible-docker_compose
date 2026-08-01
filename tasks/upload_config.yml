@@ -1,4 +1,3 @@
----
 - name: Validate variables for upload_config.yml task
   ansible.builtin.assert:
     that:

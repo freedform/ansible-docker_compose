@@ -1,18 +1,16 @@
 ---
 - name: Create docker_compose_action_list
   ansible.builtin.set_fact:
-    docker_compose_action_list: "{{ (docker_compose_actions | default('')).split(',') | reject('equalto', '') | list }}"
+    docker_compose_action_list: "{{ docker_compose_actions.split(',') }}"
 
 - name: Validate docker_compose_action_list
   ansible.builtin.assert:
     that:
       - docker_compose_action_list | length > 0
       - docker_compose_action_list | difference(docker_compose_supported_actions) | length == 0
-    fail_msg: "docker_compose_actions must be set to one or more of: {{ docker_compose_supported_actions | join(', ') }}"
 
 - name: Run Docker Compose tasks
-  ansible.builtin.include_tasks: "{{ docker_compose_action }}.yml"
+  ansible.builtin.include_tasks: "{{ task_name }}.yml"
   loop: "{{ docker_compose_action_list }}"
   loop_control:
-    loop_var: docker_compose_action
-    label: "{{ docker_compose_action }}"
+    loop_var: task_name

@@ -14,6 +14,8 @@ Automates installation, configuration, and state management of Docker Compose se
   - [docker_compose_docker_version](#docker_compose_docker_version)
   - [docker_compose_file_group](#docker_compose_file_group)
   - [docker_compose_file_owner](#docker_compose_file_owner)
+  - [docker_compose_recreate](#docker_compose_recreate)
+  - [docker_compose_secret_env](#docker_compose_secret_env)
   - [docker_compose_state_action](#docker_compose_state_action)
   - [docker_compose_version](#docker_compose_version)
 - [Dependencies](#dependencies)
@@ -66,12 +68,12 @@ Content of the docker-compose.yml file to upload
 #### Example usage
 
 ```YAML
-  docker_compose_config:
-    services:
-      app:
-        image: myapp:latest
-        ports:
-          - "8080:8080"
+docker_compose_config:
+  services:
+    app:
+      image: myapp:latest
+      ports:
+        - 8080:8080
 ```
 
 ### docker_compose_containerd_version
@@ -135,6 +137,64 @@ Owner of the uploaded docker-compose.yml file
 
 ```YAML
 docker_compose_file_owner: root
+```
+
+### docker_compose_recreate
+
+Controls whether `docker compose up` recreates containers (only in case
+`docker_compose_actions: state_control`). `auto` (the module default)
+only recreates containers whose resolved configuration actually changed;
+`always` forces recreation of every container regardless of detected
+drift; `never` leaves existing containers untouched even if config
+differs.
+
+**_Required:_** `false`<br />
+**_Type:_** String<br />
+
+#### Default value
+
+```YAML
+docker_compose_recreate: auto
+```
+
+#### Example usage
+
+```YAML
+  docker_compose_recreate: always
+```
+
+### docker_compose_secret_env
+
+Dict of environment variables passed to the `docker compose` process
+invocation only (only in case `docker_compose_actions: state_control`) -
+never written to disk. Use this for secrets that the uploaded
+docker-compose.yml references via `${VAR}` interpolation (e.g.
+`SECRET_KEY: ${SECRET_KEY}`), instead of baking literal values into
+docker_compose_config or writing a `.env` file under
+docker_compose_dest_dir. Note this only keeps secrets out of the
+uploaded compose file and any `.env` file - Docker itself still persists
+each container's fully-resolved environment to
+/var/lib/docker/containers/<id>/config.v2.json regardless of injection
+method, so this does not remove root/docker-group access to secrets on
+the host, only reduces the number of on-disk copies. When non-empty, the
+state_control task result is suppressed (no_log) to keep these values out
+of Ansible's own logs.
+
+**_Required:_** `false`<br />
+**_Type:_** Dict<br />
+
+#### Default value
+
+```YAML
+docker_compose_secret_env: {}
+```
+
+#### Example usage
+
+```YAML
+docker_compose_secret_env:
+  SECRET_KEY: '{{ plane_secret_key }}'
+  POSTGRES_PASSWORD: '{{ plane_db_password }}'
 ```
 
 ### docker_compose_state_action

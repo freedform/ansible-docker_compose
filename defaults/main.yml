@@ -8,11 +8,6 @@
 #   docker_compose_actions: install,upload_config
 # @end
 
-# @var docker_compose_docker_repo:description: Base URL of the Docker apt repository
-# @var docker_compose_docker_repo:type: String
-# @end
-docker_compose_docker_repo: https://download.docker.com/linux/ubuntu
-
 # @var docker_compose_docker_version:description: docker-ce and docker-ce-cli package version for installation
 # @var docker_compose_docker_version:required: `true`, only in case `docker_compose_actions: install`
 # @var docker_compose_docker_version:type: String
@@ -63,14 +58,57 @@ docker_compose_file_group: root
 #   docker_compose_state_action: restarted
 # @end
 
+# @var docker_compose_recreate:description: >
+# Controls whether `docker compose up` recreates containers (only in case
+# `docker_compose_actions: state_control`). `auto` (the module default)
+# only recreates containers whose resolved configuration actually changed;
+# `always` forces recreation of every container regardless of detected
+# drift; `never` leaves existing containers untouched even if config
+# differs.
+# @var docker_compose_recreate:required: `false`
+# @var docker_compose_recreate:type: String
+# @var docker_compose_recreate:example: >
+#   docker_compose_recreate: always
+# @end
+docker_compose_recreate: auto
+
+# @var docker_compose_secret_env:description: >
+# Dict of environment variables passed to the `docker compose` process
+# invocation only (only in case `docker_compose_actions: state_control`) -
+# never written to disk. Use this for secrets that the uploaded
+# docker-compose.yml references via `${VAR}` interpolation (e.g.
+# `SECRET_KEY: ${SECRET_KEY}`), instead of baking literal values into
+# docker_compose_config or writing a `.env` file under
+# docker_compose_dest_dir. Note this only keeps secrets out of the
+# uploaded compose file and any `.env` file - Docker itself still persists
+# each container's fully-resolved environment to
+# /var/lib/docker/containers/<id>/config.v2.json regardless of injection
+# method, so this does not remove root/docker-group access to secrets on
+# the host, only reduces the number of on-disk copies. When non-empty, the
+# state_control task result is suppressed (no_log) to keep these values out
+# of Ansible's own logs.
+# @var docker_compose_secret_env:required: `false`
+# @var docker_compose_secret_env:type: Dict
+# @var docker_compose_secret_env:example: $>
+# {
+#   "SECRET_KEY": "{{ plane_secret_key }}",
+#   "POSTGRES_PASSWORD": "{{ plane_db_password }}"
+# }
+# @end
+docker_compose_secret_env: {}
+
 # @var docker_compose_config:description: Content of the docker-compose.yml file to upload
 # @var docker_compose_config:required: `true`, only in case `docker_compose_actions: upload_config`
 # @var docker_compose_config:type: String
-# @var docker_compose_config:example: >
-#   docker_compose_config:
-#     services:
-#       app:
-#         image: myapp:latest
-#         ports:
-#           - "8080:8080"
+# @var docker_compose_config:example: $>
+# {
+#   "services": {
+#     "app": {
+#       "image": "myapp:latest",
+#       "ports": [
+#         "8080:8080"
+#       ]
+#     }
+#   }
+# }
 # @end
